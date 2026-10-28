@@ -120,6 +120,10 @@ dxfkit适配走发布版`scan_tags/build_drawing`，保留整图记录；moon-ge
 
 旧式`POLYLINE/VERTEX/SEQEND`投影复用dxfkit的多记录组装，再映射到真实Point2D点列。只接收至少2个完整顶点的开放XY普通二维折线：主/顶点70及75标志为0或缺省，bulge/宽度/厚度/Z为0，法向缺省或(0,0,1)，序列须有SEQEND。闭合、曲线、空间/拟合/网格、非默认法向等变体继续不投影，原tag和save保持完整，不补点或猜测几何。[可运行旧式折线示例](examples/classic_polyline/README.md)。
 
+消费者可用只读`GeometrySink::unprojected_classic_count()`查询当前缓冲中尚未投影的旧式折线候选数，及时提示这类有限投影遗漏；原`drawing()`结果不变。未完整到达SEQEND的候选也计入当前快照，完成合法开放序列后计数可回落；查询不清空或消费缓冲。它复用现有私有字段过滤与投影判断，扫描缓冲并可能分配对象。
+
+计数仅覆盖已接收ENTITIES旧式POLYLINE，不含BLOCKS局部图元、ARC/TEXT等其他未支持种类；0不能用作整图完整性证明。两种后端的[投影状态示例](examples/projection_status/README.md)展示三实体输入、两个投影对象和一个未投影旧式候选，原件保存不变。
+
 moon-geometry适配仅投递其模型可表示的几何字段，忽略其本就不支持的TEXT/图层元数据；旧代码页的这些字段不会再妨碍提取受支持LINE/CIRCLE。原始字段仍完整保留在核心document中，没有对原件做有损文本替换。
 
 该几何投影也跳过102应用定义组的私有字段，避免其中的10/20等组码形成额外顶点或替换真实坐标；嵌套组及命名结束标记按记录作用域跟踪。原document、save和完整tag sink仍保留应用载荷；这里不新增完整APPDATA合法性认证。

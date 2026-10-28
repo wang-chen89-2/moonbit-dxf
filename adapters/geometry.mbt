@@ -315,3 +315,23 @@ fn exact_geometry_values(
       )
   }
 }
+
+///|
+/// Count buffered ENTITIES classic POLYLINE candidates not projected by the
+/// current open-XY policy. Pending/incomplete sequences count until complete.
+/// This is a read-only snapshot, not a count of every unsupported entity kind.
+/// It scans buffered records and may allocate through the existing assembler.
+pub fn GeometrySink::unprojected_classic_count(self : GeometrySink) -> Int32 {
+  let records = self.records.copy()
+  if self.data.length() > 0 {
+    records.push(Bytes::from_array(self.data))
+  }
+  let mut count = 0
+  for raw_record in records {
+    if raw_record.has_prefix(b"0\nPOLYLINE\n") &&
+      classic_polyline_geometry(geometry_record_bytes(raw_record)) is None {
+      count += 1
+    }
+  }
+  count
+}

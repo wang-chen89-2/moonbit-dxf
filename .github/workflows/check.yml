@@ -50,6 +50,7 @@ jobs:
           moon run examples/inspect --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/appdata_plan --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/classic_polyline --target ${{ matrix.target }} --deny-warn --frozen
+          moon run examples/projection_status --target ${{ matrix.target }} --deny-warn --frozen
       - name: Compare independent golden tags and real geometry consumers
         if: matrix.target == 'js'
         run: node tools/verify.mjs "$RUNNER_TEMP/dxf-differential"

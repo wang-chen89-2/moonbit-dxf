@@ -10,7 +10,7 @@
 5. 显式repair输出新文件、诊断及丢弃字节数；ASCII处理有边界的坏行，Binary仅保留尾部之前已完整关闭的段，不承诺找回丢失内容。
 6. 提供单项改值；批量计划校验原tag索引、组码和有类型旧值，全部通过才生成结果。未选字节不变，结构及版本受保护；可选SHA256容器绑定原件，支持既有索引计划绑定。
 7. 按公共句柄、组码、次序或显式命名102应用组生成计划；默认跳过私有字段，目标歧义拒绝猜测。JSON须严格UTF8，文件写出保护原件与计划的路径及硬链接别名。
-8. 同步tag回调连接已发布dxfkit与moon-geometry；后者只投影ENTITIES的LINE/CIRCLE、LWPOLYLINE及受限开放XY旧式POLYLINE，隔离BLOCKS和102私有坐标。
+8. tag回调连接dxfkit与moon-geometry；投影ENTITIES的LINE/CIRCLE、LWPOLYLINE和受限开放XY旧式POLYLINE，隔离BLOCKS/102私有字段，并只读统计未投影旧式候选。
 
 核心编解码、诊断、修复、选择与计划校验由MoonBit实现；Node负责文件、摘要和输入保护，ezdxf仅作独立验证。适配器复用上游组装及几何对象。
 最短例程：安装MoonBit（moonc v0.10.17或兼容版）并解析依赖，在项目根执行：

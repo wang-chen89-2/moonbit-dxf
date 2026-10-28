@@ -29,6 +29,7 @@ pub struct GeometrySink {
 }
 pub fn GeometrySink::drawing(Self) -> @dxf_io.DxfDocument raise
 pub fn GeometrySink::new() -> Self
+pub fn GeometrySink::unprojected_classic_count(Self) -> Int32
 pub fn GeometrySink::write_ascii(Self, Bytes) -> Unit
 pub impl @dxf.DxfGeometrySink for GeometrySink
 
