@@ -1,0 +1,62 @@
+[
+  {
+    "path": "r12-ascii.dxf",
+    "sha256": "e54908282b4e9e02f7f1cd8c03434c2ef009a53aba39e8de3320f9d5d41599c6",
+    "bytes": 5427,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1009",
+    "kind": "ascii",
+    "modelspace_entities": 4
+  },
+  {
+    "path": "r12-binary.dxf",
+    "sha256": "b0b28ca5d8fdcd32fe05db7e2c4527b7ebe7f6bb5d590023ead0cfff21a84b4b",
+    "bytes": 4272,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1009",
+    "kind": "binary",
+    "modelspace_entities": 4
+  },
+  {
+    "path": "r2000-ascii.dxf",
+    "sha256": "b0d00cbea3d009d668704203fe8f37c7d0413a72a04a75dff06f334b775a2bc3",
+    "bytes": 14971,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1015",
+    "kind": "ascii",
+    "modelspace_entities": 5
+  },
+  {
+    "path": "r2000-binary.dxf",
+    "sha256": "d58b5cbdf7fe59207cd3b7de390cdf9279c5c42757e7c0b6d931e26c651f8ab4",
+    "bytes": 13121,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1015",
+    "kind": "binary",
+    "modelspace_entities": 5
+  },
+  {
+    "path": "r2018-ascii.dxf",
+    "sha256": "04f3877bd241eb9164351ecd1969763f3847a461d54b03565cd27b738a037866",
+    "bytes": 16397,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1032",
+    "kind": "ascii",
+    "modelspace_entities": 5
+  },
+  {
+    "path": "r2018-binary.dxf",
+    "sha256": "22108688f828e3d9dab4ad400ac0f9baf3d1ca0c9be0f285493e16e3af498e88",
+    "bytes": 14330,
+    "source": "original generated model using ezdxf 1.4.3",
+    "license": "CC0-1.0",
+    "version": "AC1032",
+    "kind": "binary",
+    "modelspace_entities": 5
+  }
+]

@@ -1,0 +1,4 @@
+[
+  { "handle": "ab", "code": 8, "value": { "text": "cut" } },
+  { "handle": "ac", "code": 10, "occurrence": 1, "value": { "real": "9.0" } }
+]

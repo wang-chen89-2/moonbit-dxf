@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wang-chen89/dxf/adapters"
+
+import {
+  "mik1e80/dxfkit",
+  "walkzzz/moon-geometry/io/dxf_io",
+  "wang-chen89/dxf",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct DxfkitSink {
+  data : Array[Byte]
+}
+pub fn DxfkitSink::drawing(Self) -> @dxfkit.Drawing
+pub fn DxfkitSink::new() -> Self
+pub fn DxfkitSink::write_ascii(Self, Bytes) -> Unit
+pub impl @dxf.DxfGeometrySink for DxfkitSink
+
+pub struct GeometrySink {
+  data : Array[Byte]
+  records : Array[Bytes]
+  mut pending_section : Bool
+  mut in_entities : Bool
+  mut supported_record : Bool
+}
+pub fn GeometrySink::drawing(Self) -> @dxf_io.DxfDocument raise
+pub fn GeometrySink::new() -> Self
+pub fn GeometrySink::write_ascii(Self, Bytes) -> Unit
+pub impl @dxf.DxfGeometrySink for GeometrySink
+
+// Type aliases
+
+// Traits

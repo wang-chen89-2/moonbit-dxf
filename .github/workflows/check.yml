@@ -1,0 +1,67 @@
+name: DXF CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: MoonBit (${{ matrix.target }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [js, wasm-gc]
+    env:
+      MOONBIT_INSTALL_VERSION: '0.10.17+d971670cd'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24.11.0'
+      - name: Install official MoonBit toolchain
+        run: bash tools/ci-install.sh
+      - name: Synchronize public package registry
+        run: moon update
+      - name: Check and resolve pinned module dependencies
+        run: moon check --target ${{ matrix.target }} --deny-warn
+      - name: Record resolved dependencies
+        run: moon tree
+      - name: Build
+        run: moon build --target ${{ matrix.target }} --deny-warn --frozen
+      - name: Test
+        run: moon test --target ${{ matrix.target }} --deny-warn --frozen
+      - name: Check formatting
+        run: moon fmt --check
+      - name: Check public interfaces
+        run: |
+          moon info --target ${{ matrix.target }} --frozen
+          git diff --exit-code -- '*.mbti'
+      - name: Run public MoonBit consumers
+        run: |
+          moon run examples/inspect --target ${{ matrix.target }} --deny-warn --frozen
+          moon run examples/appdata_plan --target ${{ matrix.target }} --deny-warn --frozen
+          moon run examples/classic_polyline --target ${{ matrix.target }} --deny-warn --frozen
+      - name: Compare independent golden tags and real geometry consumers
+        if: matrix.target == 'js'
+        run: node tools/verify.mjs "$RUNNER_TEMP/dxf-differential"
+      - name: Run file-host consumers and stale-source refusal
+        if: matrix.target == 'js'
+        run: |
+          node examples/bind_plan/run.mjs "$RUNNER_TEMP/dxf-bind-plan"
+          node examples/appdata_plan/run.mjs "$RUNNER_TEMP/dxf-appdata-plan"
+          node examples/source_bound/run.mjs "$RUNNER_TEMP/dxf-source-bound"
+      - name: Audit all six converted files with independent ezdxf
+        if: matrix.target == 'js'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/dxf-reference-env"
+          "$RUNNER_TEMP/dxf-reference-env/bin/python" -m pip install ezdxf==1.4.3
+          "$RUNNER_TEMP/dxf-reference-env/bin/python" -B tools/ci-reference.py "$RUNNER_TEMP/dxf-differential"

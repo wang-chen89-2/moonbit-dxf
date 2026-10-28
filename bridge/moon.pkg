@@ -1,0 +1,21 @@
+import {
+  "wang-chen89/dxf",
+  "wang-chen89/dxf/adapters",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+}
+
+options(
+  link: {
+    "js": {
+      "exports": [
+        "process_hex",
+        "apply_edits_hex",
+        "make_plan_hex",
+        "unwrap_source_plan",
+      ],
+      "format": "esm",
+    },
+  },
+)

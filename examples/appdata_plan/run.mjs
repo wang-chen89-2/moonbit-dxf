@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+const folder=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(folder,'../..');
+if(!process.argv[2]) throw Error('Usage: node examples/appdata_plan/run.mjs NEW_OUTPUT_DIRECTORY');
+const destination=path.resolve(process.argv[2]);
+fs.mkdirSync(destination);
+const commands=[];
+function cli(args) {
+ const p=spawnSync(process.execPath,[path.join(root,'tools/dxf.mjs'),...args],{encoding:'utf8'});
+ commands.push({args,status:p.status,stdout:p.stdout,stderr:p.stderr});
+ fs.writeFileSync(path.join(destination,'commands.json'),JSON.stringify(commands,null,2));
+ if(p.status!==0) throw Error(String(p.status)+': '+p.stderr);
+ return p;
+}
+const input=path.join(destination,'input.dxf');
+const requests=path.join(destination,'requests.json');
+fs.copyFileSync(path.join(folder,'input.dxf'),input,fs.constants.COPYFILE_EXCL);
+fs.copyFileSync(path.join(folder,'requests.json'),requests,fs.constants.COPYFILE_EXCL);
+const before=fs.readFileSync(input);
+const planFile=path.join(destination,'bound-plan.json');
+fs.writeFileSync(planFile,cli(['make-bound-plan',input,requests]).stdout);
+const preview=JSON.parse(cli(['patch-plan',input,planFile]).stdout);
+const output=path.join(destination,'patched.dxf');
+const receipt=JSON.parse(cli(['patch',input,output,planFile]).stderr);
+assert.deepEqual(receipt,preview);
+assert.equal(receipt.changes.length,1);
+assert.ok(fs.readFileSync(input).equals(before));
+fs.writeFileSync(path.join(destination,'receipt.json'),JSON.stringify(receipt,null,2));
+console.log(JSON.stringify({output,source_sha256:receipt.source_sha256,edits:receipt.changes.length},null,2));

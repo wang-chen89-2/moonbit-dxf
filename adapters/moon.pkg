@@ -1,0 +1,7 @@
+import {
+  "wang-chen89/dxf",
+  "mik1e80/dxfkit",
+  "walkzzz/moon-geometry/io/dxf_io",
+  "walkzzz/moon-geometry/base/core",
+  "moonbitlang/core/encoding/utf8",
+}

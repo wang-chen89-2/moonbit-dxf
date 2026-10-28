@@ -1,0 +1,162 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wang-chen89/dxf"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn group_type(Int32) -> Int32
+
+// Errors
+pub(all) suberror DxfError {
+  Invalid(offset~ : Int32, reason~ : String)
+  UnsupportedVersion(String)
+  IncompleteDocument
+  Unrepresentable(String)
+  ResourceLimit(String)
+} derive(@debug.Debug)
+pub fn DxfError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) struct Diagnostic {
+  code : String
+  severity : Severity
+  message : String
+  offset : Int32
+} derive(@debug.Debug)
+pub fn Diagnostic::to_repr(Self) -> @debug.Repr
+
+pub struct DxfDecoder {
+  data : Array[Byte]
+  items : Array[Tag]
+  issues : Array[Diagnostic]
+  mode : OperationMode
+  max_bytes : Int32
+  max_tags : Int32
+  max_tag_bytes : Int32
+  mut pos : Int32
+  mut wire : Int32
+  mut stopped : Bool
+  mut finished : Bool
+  mut discarded : Int32
+}
+pub fn DxfDecoder::feed(Self, Bytes) -> Array[Tag] raise DxfError
+pub fn DxfDecoder::finish(Self) -> DxfDocument raise DxfError
+pub fn DxfDecoder::new(mode? : OperationMode, max_bytes? : Int32, max_tags? : Int32, max_tag_bytes? : Int32) -> Self
+
+pub struct DxfDocument {
+  original : Bytes
+  items : Array[Tag]
+  mode : OperationMode
+  binary : Bool
+  width : Int32
+  version : String
+  complete : Bool
+  tail : RawChunk?
+  issues : Array[Diagnostic]
+  discarded : Int32
+}
+pub fn DxfDocument::acad_version(Self) -> String
+pub fn DxfDocument::diagnostics(Self) -> Array[Diagnostic]
+pub fn DxfDocument::from_bytes(Bytes, mode~ : OperationMode) -> Result[Self, DxfError]
+pub fn DxfDocument::is_binary(Self) -> Bool
+pub fn DxfDocument::is_complete(Self) -> Bool
+pub fn DxfDocument::lint(Self) -> Array[Diagnostic]
+pub fn DxfDocument::operation_mode(Self) -> OperationMode
+pub fn DxfDocument::original_bytes(Self) -> Bytes
+pub fn[S : DxfGeometrySink] DxfDocument::pump_geometry(Self, S) -> Unit raise DxfError
+pub fn DxfDocument::raw_tail(Self) -> RawChunk?
+pub fn DxfDocument::repair(Self) -> RepairResult raise DxfError
+pub fn DxfDocument::rewrite_value(Self, Int32, TagValue) -> Bytes raise DxfError
+pub fn DxfDocument::rewrite_values(Self, Array[ValueEdit]) -> RewriteResult raise DxfError
+pub fn DxfDocument::save(Self) -> Bytes raise DxfError
+pub fn DxfDocument::tags(Self) -> Array[Tag]
+pub fn DxfDocument::to_ascii(Self) -> String raise DxfError
+pub fn DxfDocument::to_ascii_bytes(Self) -> Bytes raise DxfError
+pub fn DxfDocument::to_binary(Self) -> Bytes raise DxfError
+pub fn DxfDocument::value_edit_by_handle(Self, String, Int32, TagValue, occurrence? : Int32) -> ValueEdit raise DxfError
+pub fn DxfDocument::value_edit_in_appdata(Self, String, String, Int32, TagValue, occurrence? : Int32) -> ValueEdit raise DxfError
+pub fn DxfDocument::write_to(Self, binary~ : Bool, (Bytes) -> Unit raise) -> Unit raise
+
+pub(all) enum OperationMode {
+  LosslessRoundTrip
+  ReadOnlyLint
+  PermissiveRepair
+} derive(Eq, @debug.Debug)
+pub fn OperationMode::equal(Self, Self) -> Bool
+pub fn OperationMode::not_equal(Self, Self) -> Bool
+pub fn OperationMode::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RawChunk {
+  offset : Int32
+  bytes : Bytes
+} derive(@debug.Debug)
+pub fn RawChunk::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RepairResult {
+  bytes : Bytes
+  diagnostics : Array[Diagnostic]
+  discarded_bytes : Int32
+} derive(@debug.Debug)
+pub fn RepairResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RewriteResult {
+  bytes : Bytes
+  changes : Array[ValueChange]
+}
+
+pub(all) enum Severity {
+  Warning
+  Error
+} derive(Eq, @debug.Debug)
+pub fn Severity::equal(Self, Self) -> Bool
+pub fn Severity::not_equal(Self, Self) -> Bool
+pub fn Severity::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Tag {
+  code : Int32
+  value : TagValue
+  offset : Int32
+  end_offset : Int32
+} derive(Eq, @debug.Debug)
+pub fn Tag::equal(Self, Self) -> Bool
+pub fn Tag::integer(Self) -> Int64?
+pub fn Tag::not_equal(Self, Self) -> Bool
+pub fn Tag::real(Self) -> Double?
+pub fn Tag::text(Self) -> String?
+pub fn Tag::to_repr(Self) -> @debug.Repr
+
+pub(all) enum TagValue {
+  Text(Bytes)
+  Integer(Int64)
+  RealBits(Int64)
+  Binary(Bytes)
+  Opaque(Bytes)
+} derive(Eq, @debug.Debug)
+pub fn TagValue::equal(Self, Self) -> Bool
+pub fn TagValue::not_equal(Self, Self) -> Bool
+pub fn TagValue::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ValueChange {
+  index : Int32
+  code : Int32
+  offset : Int32
+  end_offset : Int32
+  before : Bytes
+  after : Bytes
+}
+
+pub(all) struct ValueEdit {
+  index : Int32
+  expected_code : Int32
+  expected : TagValue
+  value : TagValue
+}
+
+// Type aliases
+
+// Traits
+pub(open) trait DxfGeometrySink {
+  fn write_ascii(Self, Bytes) -> Unit
+}

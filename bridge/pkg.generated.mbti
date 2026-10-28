@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wang-chen89/dxf/bridge"
+
+// Values
+pub fn apply_edits_hex(String, String) -> String
+
+pub fn make_plan_hex(String, String) -> String
+
+pub fn process_hex(String, String) -> String
+
+pub fn unwrap_source_plan(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,4 @@
+[
+  { "index": 3, "code": 8, "expected": { "text": "old" }, "value": { "text": "cut" } },
+  { "index": 4, "code": 10, "expected": { "real": "1.0" }, "value": { "real": "2.5" } }
+]
