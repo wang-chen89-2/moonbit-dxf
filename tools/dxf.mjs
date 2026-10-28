@@ -12,8 +12,8 @@ const moduleFile=candidates.map(p=>path.join(root,p)).find(p=>fs.existsSync(p));
 if(!moduleFile) throw Error('Build first: moon build --target js');
 const {process_hex,apply_edits_hex,make_plan_hex,unwrap_source_plan}=await import(pathToFileURL(moduleFile));
 const [action,input,output,planFile]=process.argv.slice(2);
-if(!['lint','binary','ascii','save','repair','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch'].includes(action)||!input || (action==='patch'&&(!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
-  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json'); process.exit(2);
+if(!['lint','binary','ascii','save','repair','repair-preview','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch'].includes(action)||!input || (action==='repair-preview'&&process.argv.length!==4) || (action==='patch'&&(!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
+  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs repair-preview INPUT\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json'); process.exit(2);
 }
 function separateOutput(input,output) {
  if(!output) throw Error('An output path is required');
@@ -52,10 +52,10 @@ try {
      // Native plans contain only Int32 indices/codes and typed string payloads.
      result=JSON.stringify({format:'dxf-source-plan-v1',source_sha256:createHash('sha256').update(sourceBytes).digest('hex'),edits:JSON.parse(result)});
    }
- } else result=process_hex(source,action==='repair'?'repair_report':action);
+ } else result=process_hex(source,['repair','repair-preview'].includes(action)?'repair_report':action);
  if(result.startsWith('ERROR:')) throw Error(result);
  if(action==='bind-plan') console.log(result);
- else if(['lint','adapters','tags','make-plan','make-bound-plan','patch-plan'].includes(action)) {
+ else if(['lint','adapters','tags','make-plan','make-bound-plan','patch-plan','repair-preview'].includes(action)) {
    const data=JSON.parse(result);
    if(data.tags) {data.tag_count=data.tags.length;if(action!=='tags') delete data.tags;}
    delete data.output_hex;

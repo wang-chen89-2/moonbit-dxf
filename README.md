@@ -18,6 +18,10 @@ node tools/dxf.mjs binary fixtures/r2018-ascii.dxf drawing-binary.dxf
 node tools/dxf.mjs adapters fixtures/r2018-binary.dxf
 ```
 
+修复前可先执行 `node tools/dxf.mjs repair-preview damaged.dxf`：stdout 返回与实际 `repair` 写出时 stderr 相同的 `{discarded_bytes, diagnostics}` JSON；不会创建或改写文件，也不接受输出路径。退出0表示现有修复策略能生成候选结果，退出2表示参数、读取或修复失败。预览会在内存中执行完整修复；它不是可应用的计划，不绑定后续输入，也不表示所有诊断已消除。确认损失后再运行 `node tools/dxf.mjs repair damaged.dxf repaired.dxf`；输入发生变化时应重新预览。
+
+预览与写出的独立文件消费者回归：`python -B tools/test_repair_preview.py verification-output/repair-preview`（目录须尚不存在）。它用手写 ASCII/Binary tag 和 Python struct 验证保留段、补边界、精确丢弃字节数、合法 Unicode/旧代码页字节及 NUL 替换；还验证无完整 Binary 段、R13、EOF 后记录、文件/参数错误的拒绝和原件/既有目标保护。
+
 CLI 转换/修复需单独输出路径，按文件身份拒绝覆盖输入，包括Windows大小写别名和硬链接。`lint` 退出0表示没有当前退出规则的问题，1表示检出缺陷/不完整，2表示参数、文件或转换失败；不是 AutoCAD 合规认证。`repair` 将损失字节数和诊断打印到stderr，原件不变。
 
 `patch`写出同时保护DXF原件和计划文件两个输入，输出不能指向任一输入或其文件别名；旧数组计划和原件绑定容器均适用。单独的既有目标仍按原行为允许写出。

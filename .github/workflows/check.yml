@@ -66,6 +66,9 @@ jobs:
       - name: Test patch input file identities
         if: matrix.target == 'js'
         run: python3 -B tools/test_patch_alias.py "$RUNNER_TEMP/dxf-patch-alias"
+      - name: Test read-only repair preview and loss receipts
+        if: matrix.target == 'js'
+        run: python3 -B tools/test_repair_preview.py "$RUNNER_TEMP/dxf-repair-preview"
       - name: Audit all six converted files with independent ezdxf
         if: matrix.target == 'js'
         run: |
