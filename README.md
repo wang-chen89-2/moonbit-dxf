@@ -24,6 +24,15 @@ CLI 转换/修复需单独输出路径，按文件身份拒绝覆盖输入，包
 
 CLI请求/计划JSON文件须为有效UTF-8；非法字节会退出2，不生成计划或写出DXF，不再静默替换成`�`。合法Unicode及显式U+FFFD照常保留；`text_hex`等ASCII十六进制载荷继续表达原始DXF字节，此检查不对DXF原件猜测转码。
 
+该文件宿主合同有独立的进程级回归，可在JS构建后运行（需Python 3）：
+
+```sh
+moon build --target js --deny-warn
+python -B tools/test_cli_utf8.py verification-output/cli-utf8
+```
+
+输出目录须尚不存在，保留逐进程结果与输入/输出证据。Python严格解码独立确认单个非法字节、过长编码和截断多字节反例；回归覆盖请求、数组/原件绑定计划的拒绝路径、无计划stdout、输入/既有目标保留和不创建新DXF。合法Unicode链的完整输出另与已知单处原始字节替换预期比较，包含显式U+FFFD。GitHub Actions的JS任务执行此回归；它验证既有JSON入口合同，不扩展DXF编码处理。
+
 ## 三种模式与明确改写
 
 | 操作 | 行为与保真终点 |

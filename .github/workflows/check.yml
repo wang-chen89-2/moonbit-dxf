@@ -59,6 +59,9 @@ jobs:
           node examples/bind_plan/run.mjs "$RUNNER_TEMP/dxf-bind-plan"
           node examples/appdata_plan/run.mjs "$RUNNER_TEMP/dxf-appdata-plan"
           node examples/source_bound/run.mjs "$RUNNER_TEMP/dxf-source-bound"
+      - name: Test strict UTF-8 file-host contracts
+        if: matrix.target == 'js'
+        run: python3 -B tools/test_cli_utf8.py "$RUNNER_TEMP/dxf-cli-utf8"
       - name: Audit all six converted files with independent ezdxf
         if: matrix.target == 'js'
         run: |
