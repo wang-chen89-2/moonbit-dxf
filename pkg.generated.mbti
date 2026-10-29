@@ -78,7 +78,9 @@ pub fn DxfDocument::to_ascii_bytes(Self) -> Bytes raise DxfError
 pub fn DxfDocument::to_binary(Self) -> Bytes raise DxfError
 pub fn DxfDocument::value_edit_by_handle(Self, String, Int32, TagValue, occurrence? : Int32) -> ValueEdit raise DxfError
 pub fn DxfDocument::value_edit_in_appdata(Self, String, String, Int32, TagValue, occurrence? : Int32) -> ValueEdit raise DxfError
+pub fn DxfDocument::value_edit_in_xdata(Self, String, String, Int32, TagValue, occurrence? : Int32) -> ValueEdit raise DxfError
 pub fn DxfDocument::write_to(Self, binary~ : Bool, (Bytes) -> Unit raise) -> Unit raise
+pub fn DxfDocument::xdata_by_appid(Self, String, String) -> Array[Tag] raise DxfError
 
 pub(all) enum OperationMode {
   LosslessRoundTrip

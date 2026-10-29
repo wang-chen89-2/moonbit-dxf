@@ -52,6 +52,7 @@ jobs:
           moon run examples/classic_polyline --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/projection_status --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/record_handoff --target ${{ matrix.target }} --deny-warn --frozen
+          moon run examples/xdata_plan --target ${{ matrix.target }} --deny-warn --frozen
       - name: Compare independent golden tags and real geometry consumers
         if: matrix.target == 'js'
         run: node tools/verify.mjs "$RUNNER_TEMP/dxf-differential"
@@ -73,6 +74,9 @@ jobs:
       - name: Test exact record export and receiving workflow
         if: matrix.target == 'js'
         run: python3 -B tools/test_record_handoff.py "$RUNNER_TEMP/dxf-record-handoff"
+      - name: Test APPID-scoped XDATA edit workflow
+        if: matrix.target == 'js'
+        run: python3 -B tools/test_xdata_workflow.py "$RUNNER_TEMP/dxf-xdata-workflow"
       - name: Audit all six converted files with independent ezdxf
         if: matrix.target == 'js'
         run: |

@@ -10,6 +10,8 @@ pub fn make_plan_hex(String, String) -> String
 
 pub fn process_hex(String, String) -> String
 
+pub fn read_xdata_hex(String, String, String) -> String
+
 pub fn unwrap_source_plan(String) -> String
 
 // Errors

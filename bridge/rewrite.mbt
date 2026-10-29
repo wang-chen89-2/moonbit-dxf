@@ -107,10 +107,20 @@ pub fn make_plan_hex(input : String, requests : String) -> String {
       }
       let has_occurrence = object.contains("occurrence")
       let has_appdata = object.contains("appdata")
+      let has_xdata = object.contains("xdata")
+      if has_appdata && has_xdata {
+        fail("appdata and xdata are mutually exclusive")
+      }
       if object.length() !=
         3 +
         (if has_occurrence { 1 } else { 0 }) +
-        (if has_appdata { 1 } else { 0 }) {
+        (if has_appdata { 1 } else { 0 }) +
+        (if has_xdata { 1 } else { 0 }) {
+        if has_xdata {
+          fail(
+            "each XDATA request requires handle, code, value and optional occurrence/xdata",
+          )
+        }
         fail(
           "each request requires handle, code, value and optional occurrence/appdata",
         )
@@ -123,7 +133,15 @@ pub fn make_plan_hex(input : String, requests : String) -> String {
       } else {
         0
       }
-      let edit = if has_appdata {
+      let edit = if has_xdata {
+        doc.value_edit_in_xdata(
+          handle,
+          plan_string(object, "xdata"),
+          code,
+          value,
+          occurrence~,
+        )
+      } else if has_appdata {
         doc.value_edit_in_appdata(
           handle,
           plan_string(object, "appdata"),

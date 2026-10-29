@@ -76,7 +76,9 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 按记录句柄形成计划可用`value_edit_by_handle(handle, code, value, occurrence?)`与CLI `make-plan INPUT REQUESTS.json`。默认请求查找公共5句柄（DIMSTYLE为105），按组码/出现次序捕获原始有类型旧值，跳过102应用数据；输出兼容现有批量计划，文本用原始hex、Double用bits，避免把tags的有损显示当作旧字节。缺失/重复句柄或字段超界会拒绝。[普通字段示例](examples/handle_plan/README.md)。
 
-需准确选择既有102私有字段时，请求可显式增加`"appdata":"应用名"`，或调用`value_edit_in_appdata(handle, application, code, value, occurrence?)`。只匹配唯一同名顶层组的直属字段，名称按UTF8字节精确比较，子组字段不计数；重名/未闭合目标组拒绝猜测。旧默认请求、计划数组和绑定容器不变；不提供XDATA APPID、子类/几何查询或完整应用语义认证。[命名应用组运行示例](examples/appdata_plan/README.md)。
+需准确选择既有102私有字段时，请求可显式增加`"appdata":"应用名"`，或调用`value_edit_in_appdata(handle, application, code, value, occurrence?)`。只匹配唯一同名顶层组的直属字段，名称按UTF8字节精确比较，子组字段不计数；重名/未闭合目标组拒绝猜测。旧默认请求、计划数组和绑定容器不变；不提供子类/几何查询或完整应用语义认证。[命名应用组运行示例](examples/appdata_plan/README.md)。
+
+同一记录含多个应用的XDATA时，可用 `xdata_by_appid(handle, application)` 读取唯一公共1001范围的原始有类型tag，或用 `value_edit_in_xdata(handle, application, code, value, occurrence?)` 捕获已有值；请求增加可选 `"xdata":"APP_B"`，与appdata互斥。名字按UTF8字节精确匹配，occurrence包含平衡的嵌套1002列表；先完整检查目标范围的歧义/结构，再返回读取或计划。空范围可读，不新增块/注册APPID或认证应用模式。真实文件接收方读取改写后的APPID载荷，现有计划/收据不变。[完整读取、改写及接收流程](examples/xdata_plan/README.md)。
 
 需要确认整份原件时，文件CLI可用`make-bound-plan INPUT REQUESTS.json`生成含SHA256的可选容器；`patch-plan/patch`先核对当前输入字节，再做原有值/结构校验，成功记录摘要。旧make-plan默认数组及其所选tag合同保持不变。JSON拆封/数值词法由MoonBit处理，实际摘要由Node文件宿主计算；未增加核心依赖。[可运行原件绑定示例](examples/source_bound/README.md)。
 

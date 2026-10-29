@@ -15,6 +15,7 @@ options(
         "make_plan_hex",
         "unwrap_source_plan",
         "export_record_hex",
+        "read_xdata_hex",
       ],
       "format": "esm",
     },
