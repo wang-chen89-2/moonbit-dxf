@@ -77,6 +77,9 @@ jobs:
       - name: Test APPID-scoped XDATA edit workflow
         if: matrix.target == 'js'
         run: python3 -B tools/test_xdata_workflow.py "$RUNNER_TEMP/dxf-xdata-workflow"
+      - name: Test canonical duplicate-handle lint intake
+        if: matrix.target == 'js'
+        run: python3 -B tools/test_handle_lint.py "$RUNNER_TEMP/dxf-handle-lint"
       - name: Audit all six converted files with independent ezdxf
         if: matrix.target == 'js'
         run: |

@@ -86,7 +86,7 @@ pub fn DxfDocument::lint(self : DxfDocument) -> Array[Diagnostic] {
       ) &&
       text != "" &&
       !in_appdata {
-      let key = text.to_upper()
+      let key = canonical_handle(text).unwrap_or(text.to_upper())
       match handles.get(key) {
         Some(_) =>
           result.push(

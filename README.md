@@ -110,6 +110,10 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 五类主要规则：未闭合段、缺EOF、重复句柄（含DIMSTYLE 105例外）、悬空INSERT块名、XDATA列表不平衡；另有未闭合TABLE、非法文本、未知尾部、版本/宽度不一致等诊断。重复句柄与缺块只诊断，不擅自更名或删除对象。
 
+重复句柄诊断对合法1到16位十六进制值按既有句柄身份规则比较，忽略大小写和前导零：`2A`与`00002a`会在后者原始offset报告`DuplicateHandle`，文件CLI `lint`退出1。原tag/字节及消息中的原写法保留；DIMSTYLE仍以105为拥有者，私有102字段仍排除。格式不合法的字符串保持原来的大写字符串比较，不借此新增句柄格式验证或改变解析接受范围。
+
+真实文件入口回归：JS构建后运行 `python -B tools/test_handle_lint.py verification-output/handle-lint`，目录须不存在。独立bytes/struct模型与整数恒等式建立预期，逐一核对现有CLI的完整JSON、退出码、原始偏移及只读文件内容；CI执行位置与证据边界见[CI计划](CI-PLAN.md)。
+
 TABLE缺少ENDTAB时，即使后续TABLE正常闭合，也会在下一TABLE的原始字节offset报告`UnclosedTable`；不会用后表的结束标记掩盖前表缺失。只读保存仍保持原字节，显式repair保留该诊断，不擅自补表边界。
 
 块名按原字节进行ASCII大小写匹配；旧代码页名不再因UTF8失败合并为空名，无法显示为UTF8的缺块诊断给出原始十六进制名，不猜测代码页转换。
