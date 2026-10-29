@@ -12,8 +12,8 @@ const moduleFile=candidates.map(p=>path.join(root,p)).find(p=>fs.existsSync(p));
 if(!moduleFile) throw Error('Build first: moon build --target js');
 const {process_hex,apply_edits_hex,make_plan_hex,unwrap_source_plan,export_record_hex,record_spans_hex}=await import(pathToFileURL(moduleFile));
 const [action,input,output,planFile]=process.argv.slice(2);
-if(!['lint','binary','ascii','save','repair','repair-preview','record','records','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch'].includes(action)||!input || (action==='record'&&process.argv.length!==6) || (action==='records'&&process.argv.length!==4) || (action==='repair-preview'&&process.argv.length!==4) || (action==='patch'&&(!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
-  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs record INPUT OUTPUT HANDLE\nnode tools/dxf.mjs records INPUT\nnode tools/dxf.mjs repair-preview INPUT\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json'); process.exit(2);
+if(!['lint','binary','ascii','save','repair','repair-preview','record','records','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch','verify-patch'].includes(action)||!input || (action==='record'&&process.argv.length!==6) || (action==='records'&&process.argv.length!==4) || (action==='repair-preview'&&process.argv.length!==4) || (action==='patch'&&(!output||!planFile)) || (action==='verify-patch'&&(process.argv.length!==6||!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
+  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs record INPUT OUTPUT HANDLE\nnode tools/dxf.mjs records INPUT\nnode tools/dxf.mjs repair-preview INPUT\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json\nnode tools/dxf.mjs verify-patch SOURCE RECEIVED BOUND_PLAN.json'); process.exit(2);
 }
 function separateOutput(input,output) {
  if(!output) throw Error('An output path is required');
@@ -33,10 +33,11 @@ try {
  let result, verifiedSource=null;
  if(action==='record') result=export_record_hex(source,planFile);
  else if(action==='records') result=record_spans_hex(source);
- else if(['bind-plan','patch-plan','patch'].includes(action)) {
-   const decoded=unwrap_source_plan(readJsonInput(action==='patch'?planFile:output));
+ else if(['bind-plan','patch-plan','patch','verify-patch'].includes(action)) {
+   const decoded=unwrap_source_plan(readJsonInput(['patch','verify-patch'].includes(action)?planFile:output));
    if(decoded.startsWith('ERROR:')) throw Error(decoded);
    const metadata=JSON.parse(decoded);
+   if(action==='verify-patch'&&metadata.source_sha256===null) throw Error('verify-patch requires a source-bound plan');
    if(metadata.source_sha256!==null) {
      const digest=createHash('sha256').update(sourceBytes).digest('hex');
      if(digest!==metadata.source_sha256) throw Error('Input SHA-256 does not match the source-bound plan');
@@ -57,6 +58,15 @@ try {
  } else result=process_hex(source,['repair','repair-preview'].includes(action)?'repair_report':action);
  if(result.startsWith('ERROR:')) throw Error(result);
  if(action==='bind-plan') console.log(result);
+ else if(action==='verify-patch') {
+   const report=JSON.parse(result), received=fs.readFileSync(output);
+   if(!received.equals(Buffer.from(report.output_hex,'hex'))) throw Error('Received file does not match the source-bound edit result');
+   delete report.output_hex;
+   report.source_sha256=verifiedSource;
+   report.output_sha256=createHash('sha256').update(received).digest('hex');
+   report.verified=true;
+   console.log(JSON.stringify(report,null,2));
+ }
  else if(['lint','adapters','tags','records','make-plan','make-bound-plan','patch-plan','repair-preview'].includes(action)) {
    const data=JSON.parse(result);
    if(data.tags) {data.tag_count=data.tags.length;if(action!=='tags') delete data.tags;}

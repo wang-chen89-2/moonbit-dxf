@@ -86,6 +86,8 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 已有按索引编写的计划（包括没有句柄的记录）可用`bind-plan INPUT PLAN.json`先完整校验，再向stdout输出同一原件绑定容器；不改原件/计划，不写DXF。编辑数字词法保留；若输入已绑定，须先匹配当前原件，失配不会被重新绑定。[既有计划绑定示例](examples/bind_plan/README.md)。
 
+收到整份改写文件后，可执行 `node tools/dxf.mjs verify-patch SOURCE RECEIVED BOUND_PLAN.json`。该只读入口核对原件SHA256，复用既有原生计划审批并生成完整预期结果，再与实际接收文件逐字节比较；成功stdout在原收据字段上增加`verified:true`和实际文件`output_sha256`，不会写文件。任何额外字节、未选字段变化或仅数值词法/换行的变化都不能冒充该计划结果。退出0只证明读到的文件等于此原件/计划的结果，2表示参数、文件、计划审批或字节比较失败，不输出成功JSON。新核验要求既有原件绑定容器，旧数组计划的预览/写出仍支持。空计划沿用原有不改值合同，只核对绑定来源及字节身份，不触发编辑的版本/完整性审批；核验不代替lint或CAD验收。[完整用法及独立文件接收验证](examples/source_bound/README.md)。
+
 按公共句柄交接完整物理记录可用 `doc.record_by_handle(handle)` 或 `node tools/dxf.mjs record INPUT OUTPUT HANDLE`：返回原始wire字节及绝对来源区间，文件收据另含原件/片段摘要和profile。实际接收方 `node examples/record_handoff/receive.mjs SOURCE RECORD RECEIPT` 核对原件成员关系并通过公共decoder读取一条物理记录；不会把片段当独立图纸、引用闭包或完整逻辑实体。保留102私有载荷，复用原拥有者规则和文件别名保护；新入口只接受完整typed、支持版本/wire一致的非repair源，旧API/JSON/计划与编码不变。[完整交接及错误边界](examples/record_handoff/README.md)。
 
 没有句柄的旧图纸也可用 `doc.record_spans()` 或 `node tools/dxf.mjs records INPUT` 建立只读物理记录清单。每个公开 code0 开始一段，包含 SECTION、TABLE、ENDSEC、EOF 及未知种类；`RecordSpan` 给出零起算的 ordinal、`start_tag`/`end_tag` 和原件 `offset`/`end_offset`，两种 end 均为排他边界。首个 code0 前的标签、最后标签后的非标签空白不计入记录，仍保存在原件中。`kind: Bytes` 与 `handle: Bytes?` 保留原始编码，文件 JSON 使用 `kind_hex` 和 `handle_hex`/null，并给出 version、binary、source_bytes、record_count、records 和原件 source_sha256。
@@ -163,4 +165,4 @@ moon-geometry适配仅投递其模型可表示的几何字段，忽略其本就�
 
 ## 持续集成
 
-GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行八个 MoonBit 公共包消费示例。JS 任务另运行独立 golden tag 对照、文件计划与接收例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。
+GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行九个 MoonBit 公共包消费示例。JS 任务另运行独立 golden tag 对照、文件计划与接收例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。
