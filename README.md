@@ -88,6 +88,10 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 按公共句柄交接完整物理记录可用 `doc.record_by_handle(handle)` 或 `node tools/dxf.mjs record INPUT OUTPUT HANDLE`：返回原始wire字节及绝对来源区间，文件收据另含原件/片段摘要和profile。实际接收方 `node examples/record_handoff/receive.mjs SOURCE RECORD RECEIPT` 核对原件成员关系并通过公共decoder读取一条物理记录；不会把片段当独立图纸、引用闭包或完整逻辑实体。保留102私有载荷，复用原拥有者规则和文件别名保护；新入口只接受完整typed、支持版本/wire一致的非repair源，旧API/JSON/计划与编码不变。[完整交接及错误边界](examples/record_handoff/README.md)。
 
+没有句柄的旧图纸也可用 `doc.record_spans()` 或 `node tools/dxf.mjs records INPUT` 建立只读物理记录清单。每个公开 code0 开始一段，包含 SECTION、TABLE、ENDSEC、EOF 及未知种类；`RecordSpan` 给出零起算的 ordinal、`start_tag`/`end_tag` 和原件 `offset`/`end_offset`，两种 end 均为排他边界。首个 code0 前的标签、最后标签后的非标签空白不计入记录，仍保存在原件中。`kind: Bytes` 与 `handle: Bytes?` 保留原始编码，文件 JSON 使用 `kind_hex` 和 `handle_hex`/null，并给出 version、binary、source_bytes、record_count、records 和原件 source_sha256。
+
+拥有者候选复用旧查找规则：忽略102私有组，止于首个公开100/1001，DIMSTYLE用105，其余可拥有句柄的记录用5，结构控制记录不取拥有者。候选可能缺失、非法或重复；清单不授权按该值编辑，旧句柄查找仍拒绝歧义。新入口要求完整typed、支持版本/wire一致的非repair源；退出0只表示清单生成，不表示CAD语义合法。调用者可把记录标签区间与现有 `tags` 联用，选定索引后照常 `bind-plan`、`patch-plan`、`patch` 和完整读回。[双格式无句柄索引编辑与接收示例](examples/record_inventory/README.md)。
+
 `DxfDecoder::new(mode?, max_bytes?, max_tags?, max_tag_bytes?)`的`feed(Bytes)`逐次发出完整tag，`finish()`处理尾部。默认上限64MiB输入、100万tag、1MiB单tag；有原件保真需求，解码器保留O(input)内存。不要无限制复用同一decoder；finish后feed/finish均报错。`write_to(binary~, callback)`逐tag写出，消费者异常向上传播。
 
 ## 格式与版本边界

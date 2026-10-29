@@ -68,6 +68,7 @@ pub fn DxfDocument::original_bytes(Self) -> Bytes
 pub fn[S : DxfGeometrySink] DxfDocument::pump_geometry(Self, S) -> Unit raise DxfError
 pub fn DxfDocument::raw_tail(Self) -> RawChunk?
 pub fn DxfDocument::record_by_handle(Self, String) -> RawChunk raise DxfError
+pub fn DxfDocument::record_spans(Self) -> Array[RecordSpan] raise DxfError
 pub fn DxfDocument::repair(Self) -> RepairResult raise DxfError
 pub fn DxfDocument::rewrite_value(Self, Int32, TagValue) -> Bytes raise DxfError
 pub fn DxfDocument::rewrite_values(Self, Array[ValueEdit]) -> RewriteResult raise DxfError
@@ -96,6 +97,16 @@ pub(all) struct RawChunk {
   bytes : Bytes
 } derive(@debug.Debug)
 pub fn RawChunk::to_repr(Self) -> @debug.Repr
+
+pub struct RecordSpan {
+  ordinal : Int32
+  start_tag : Int32
+  end_tag : Int32
+  kind : Bytes
+  handle : Bytes?
+  offset : Int32
+  end_offset : Int32
+}
 
 pub(all) struct RepairResult {
   bytes : Bytes

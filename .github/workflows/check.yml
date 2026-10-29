@@ -53,6 +53,7 @@ jobs:
           moon run examples/classic_plinegen --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/projection_status --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/record_handoff --target ${{ matrix.target }} --deny-warn --frozen
+          moon run examples/record_inventory --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/xdata_plan --target ${{ matrix.target }} --deny-warn --frozen
           moon run examples/xrecord_rewrite --target ${{ matrix.target }} --deny-warn --frozen
       - name: Compare independent golden tags and real geometry consumers
@@ -94,3 +95,6 @@ jobs:
       - name: Test classic POLYLINE linetype profile and receiving
         if: matrix.target == 'js'
         run: python3 -B tools/test_classic_plinegen.py "$RUNNER_TEMP/dxf-classic-plinegen"
+      - name: Test physical record inventory and indexed receiving
+        if: matrix.target == 'js'
+        run: python3 -B tools/test_record_inventory.py "$RUNNER_TEMP/dxf-record-inventory"

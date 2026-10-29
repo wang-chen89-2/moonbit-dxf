@@ -18,6 +18,37 @@ fn canonical_handle(text : String) -> String? {
 }
 
 ///|
+// First public common-data owner candidate; validity/uniqueness belongs to lookup.
+fn record_handle_index(
+  items : Array[Tag],
+  start : Int32,
+  end : Int32,
+) -> Int32? {
+  let kind = items[start].text().unwrap_or("")
+  if ["SECTION", "ENDSEC", "EOF", "ENDTAB"].contains(kind) {
+    return None
+  }
+  let handle_code = if kind == "DIMSTYLE" { 105 } else { 5 }
+  let mut app_depth = 0
+  for i in (start + 1)..<end {
+    let tag = items[i]
+    let next = appdata_depth_after(app_depth, tag)
+    let in_appdata = app_depth > 0 || next > 0
+    app_depth = next
+    if in_appdata {
+      continue
+    }
+    if tag.code == 100 || tag.code == 1001 {
+      break
+    }
+    if tag.code == handle_code {
+      return Some(i)
+    }
+  }
+  None
+}
+
+///|
 /// Resolve one record and capture an exact existing value for a batch plan.
 /// Lookup skips 102 application groups. Repeated ordinary/XDATA codes use a
 /// zero-based occurrence; final wire/structural approval is rewrite_values.
@@ -50,32 +81,14 @@ pub fn DxfDocument::value_edit_by_handle(
     while end < self.items.length() && self.items[end].code != 0 {
       end += 1
     }
-    let kind = self.items[start].text().unwrap_or("")
-    if !["SECTION", "ENDSEC", "EOF", "ENDTAB"].contains(kind) {
-      let handle_code = if kind == "DIMSTYLE" { 105 } else { 5 }
-      let mut app_depth = 0
-      for i in (start + 1)..<end {
-        let tag = self.items[i]
-        let next = appdata_depth_after(app_depth, tag)
-        let in_appdata = app_depth > 0 || next > 0
-        app_depth = next
-        if in_appdata {
-          continue
+    if record_handle_index(self.items, start, end) is Some(index) {
+      let tag = self.items[index]
+      if tag.text().map(canonical_handle).unwrap_or(None) == Some(key) {
+        if matched_start >= 0 {
+          raise Invalid(offset=tag.offset, reason="ambiguous record handle")
         }
-        // The owning handle is common data, before subclass/XDATA fields.
-        if tag.code == 100 || tag.code == 1001 {
-          break
-        }
-        if tag.code == handle_code {
-          if tag.text().map(canonical_handle).unwrap_or(None) == Some(key) {
-            if matched_start >= 0 {
-              raise Invalid(offset=tag.offset, reason="ambiguous record handle")
-            }
-            matched_start = start
-            matched_end = end
-          }
-          break
-        }
+        matched_start = start
+        matched_end = end
       }
     }
     start = end
