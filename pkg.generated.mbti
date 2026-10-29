@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "wang-chen89/dxf"
+package "wang-chen89-2/dxf"
 
 import {
   "moonbitlang/core/debug",

@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "wang-chen89/dxf/bridge"
+package "wang-chen89-2/dxf/bridge"
 
 // Values
 pub fn apply_edits_hex(String, String) -> String

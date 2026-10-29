@@ -1,6 +1,6 @@
 # Sources and licenses
 
-- Original project code: MIT, see LICENSE. Module/account identity: wang-chen89/dxf. No author history is fabricated.
+- Original project code: MIT, see LICENSE. Original source identity: `wang-chen89/dxf` (source author `wang-chen89`). Current module: `wang-chen89-2/dxf`; current maintainer/submission account: `wang-chen89-2`; repository: https://github.com/wang-chen89-2/moonbit-dxf. Original license, copyright and Git author history are retained.
 - `mik1e80/dxfkit@0.1.1`: Apache-2.0, https://github.com/mik1e80/dxfkit. Used as a real optional consumer by adapters; its source/geometry algorithms are not claimed as original work here. Module manifests download its dependency graph; core package imports only core.
 - `walkzzz/moon-geometry@0.251.0`: MIT, https://github.com/walkzzz/moon-geometry. Used by adapters/io/dxf_io only; its own unsupported entity and parser limits remain applicable. We do not modify its source.
 - `ezdxf==1.4.3`: MIT, https://github.com/mozman/ezdxf/tree/v1.4.3. External independent model generator/typed-tag and audit oracle; not a MoonBit runtime wrapper. Install in an isolated environment or use the separately recorded local reference-deps. No third-party DXF corpus is assumed MIT from this software license.

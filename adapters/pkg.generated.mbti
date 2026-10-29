@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "wang-chen89/dxf/adapters"
+package "wang-chen89-2/dxf/adapters"
 
 import {
   "mik1e80/dxfkit",
   "walkzzz/moon-geometry/io/dxf_io",
-  "wang-chen89/dxf",
+  "wang-chen89-2/dxf",
 }
 
 // Values

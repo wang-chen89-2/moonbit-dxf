@@ -1,8 +1,8 @@
 # moonbit-dxf
 
-源码仓库：[wang-chen89-2/moonbit-dxf](https://github.com/wang-chen89-2/moonbit-dxf)。模块与原作者标识保持 `wang-chen89/dxf`。
+源码仓库：[wang-chen89-2/moonbit-dxf](https://github.com/wang-chen89-2/moonbit-dxf)。当前模块为 `wang-chen89-2/dxf`，维护与申报账号为 `wang-chen89-2`。原始来源作者标识 `wang-chen89`、许可证及 Git 作者历史按原记录保留，见[来源与许可](THIRD_PARTY_NOTICES.md)。
 
-原生 MoonBit ASCII/Binary DXF 有类型记录流、原字节保留、显式修复与记录级诊断。模块名 `wang-chen89/dxf`，版本 0.1.0，尚未发布到 Mooncakes。它为 DXF 导入、检查、脚本重写与既有几何库提供格式层；不重复实现 OCS、bulge 或块拍平。
+原生 MoonBit ASCII/Binary DXF 有类型记录流、原字节保留、显式修复与记录级诊断。模块名 `wang-chen89-2/dxf`，版本 0.1.0，尚未发布到 Mooncakes。它为 DXF 导入、检查、脚本重写与既有几何库提供格式层；不重复实现 OCS、bulge 或块拍平。
 
 需要 MoonBit **v0.10.17** 或兼容新版、Node.js 20+（文件 CLI）；CI 固定 MoonBit `0.10.17+d971670cd` 和 Node.js 24.11.0，并记录实际工具版本。核心包只引用 MoonBit core；`adapters` 使用已发布的 `mik1e80/dxfkit@0.1.1` 和 `walkzzz/moon-geometry@0.251.0`。依赖按模块 manifest 下载，几何代码不计为本库自研。
 
@@ -59,7 +59,7 @@ python -B tools/test_cli_utf8.py verification-output/cli-utf8
 
 `is_complete()`指整个字节流已分解为有类型tag，不代表语义或段结构合法；仍须检查`lint()`。解析异常、未知Binary组码和截断以诊断与`raw_tail()`保留；资源超限通过`DxfError`返回。未覆盖记录不能被当成“检查通过”。
 
-公共调用示例（在消费者moon.pkg中导入`"wang-chen89/dxf"`）：
+公共调用示例（在消费者moon.pkg中导入`"wang-chen89-2/dxf"`）：
 
 ```mbt
 let doc = @dxf.DxfDocument::from_bytes(bytes, mode=@dxf.LosslessRoundTrip).unwrap()
@@ -150,27 +150,13 @@ moon-geometry适配仅投递其模型可表示的几何字段，忽略其本就�
 
 `fixtures/`包含本项目用独立ezdxf 1.4.3创建并导出的6份R12/R2000/R2018文件，原始模型与数据采用CC0-1.0；文件身份和来源见`fixtures/MANIFEST.json`。是独立生产工具生成的真实格式输入，不是手写parser镜像；没有冒称AutoCAD/国产CAD原生导出实测。厂商样例因未核清逐文件授权而没有捆绑。
 
-implementation-03基线验证：18项JS及Wasm-GC测试；3,719个有序tag与独立ezdxf真值比较；六份本库转码输出由ezdxf回读，audit errors/fixes均0；双sink的实体数与坐标经过断言。五类坏图都由本库检出，ezdxf在加载或audit阶段对其中四类给出独立信号；XDATA括号缺失在该ezdxf流程未报告，不能宣称两库任意缺陷检出完全一致。详细可复现说明见`VERIFICATION.md`。
+独立格式对照覆盖3,719个有序tag，六份本库转码输出经ezdxf回读，audit errors/fixes均0；双sink的实体数与坐标经过断言。五类坏图都由本库检出，ezdxf在加载或audit阶段对其中四类给出独立信号；XDATA括号缺失在该ezdxf流程未报告，不能宣称两库任意缺陷检出完全一致。
 
-deep-repair-05新增12项针对性回归，修复8条已复现缺陷；本轮在JS/Wasm-GC各运行新增回归和15项受影响既有测试，未重复3项未变的历史模型测试。另用Python struct与ezdxf独立检查142种有限Double位模式、两种wire、9个Int64边界值，并枚举CRLF/UTF8与Binary的切分/截断边界。
+原生回归覆盖版本与段/表作用域、流式切分和截断、原始代码页字节、Int64边界、IEEE754位模式、局部改写前置条件以及102/XDATA选择边界。独立数值对照包括142种有限Double位模式及9个Int64边界值；这些历史精度扫描与生成方法记录在[验证说明](VERIFICATION.md)，不会把未重跑的历史结果计作新执行。
 
-deep-repair-06新增8项回归，覆盖版本作用域/注释/改写保护、ASCII块名大小写、坏行单tag预算、LINE默认Z及混合图元状态；双端各运行35项相关测试。CLI大小写/硬链接保护与独立ezdxf回读另有执行证据。历史大型模型及142位模式结果沿用原报告，不计入本轮执行数；详见`VERIFICATION.md`。
-
-deep-repair-07修复几何指数值、非十进制整数/组码及旧代码页块名身份4个原因，新增6项回归；双端各32项相关测试，另有ezdxf时间字段、legacy块名与错误路径的小型独立消费证据。未变的大型模型/精度扫描及无关修复检查不重复。
-
-deep-repair-12修复后续TABLE掩盖缺ENDTAB的漏报，JS/Wasm-GC各通过6项相关测试（3项新增、3项受影响既有回归）。独立R2018 ASCII/Binary模型的CLI退出码、诊断原始偏移、精确保真保存及repair保留未解决诊断均已核对。ezdxf高层加载/audit容忍该ASCII缺边界样本；本轮依据格式定义及独立原始tag边界核验，不宣称其audit也检出该问题。
-
-deep-repair-13修复moon-geometry投影将102私有坐标当作额外顶点/实体标量的原因，最终JS/Wasm-GC各9项相关适配测试通过（3项新增、6项既有）。合法两顶点独立模型曾实际消费为三顶点；修复后导出实体的双格式真实消费者点数/坐标正确，完整模型CLI实体数与精确保真保存也已核对。公开接口、核心tag流和私有载荷保留，详见`VERIFICATION.md`。
-
-deep-repair-14修复JSON文件有损UTF8解码导致的静默改写：8个非法编码场景安全拒绝，旧数组及原件绑定两条Unicode请求→预览→写出链通过，独立回读及完整输出字节预期一致。共15条相关命令（含1条Node语法检查）；MoonBit源码/接口未变，原生编译产物复用，未重复原生套件。
-
-deep-repair-15恢复102私有code9元数据的合法按索引改写，真实结构/版本保护保留。JS/Wasm-GC各11项相关回归通过；双wire×双计划4次写出匹配独立单span字节预期，4个混合结构计划整项拒绝且既有输出不变，2份不同输出独立回读/audit均0/0。公共接口未变，未重复UTF8或几何旧场景；交付报告附生态对照与可运行外部计划例程。
-
-deep-repair-16新增显式命名102组的计划选择，核心仅增加`value_edit_in_appdata`，旧方法/签名和计划格式保留。JS/Wasm-GC各7项相关测试（5新、2既有请求兼容）通过，双端MoonBit及Node例程实跑；四条双格式文件链准确捕获目标索引/旧值，2份不同输出独立回读/audit均0/0。缺失/重名目标拒绝猜测，未重跑旧UTF8、结构保护或整批拒绝场景。
-
-自己的源码MIT，依赖和参考资料各按原许可，见`THIRD_PARTY_NOTICES.md`。这是本地已验证交付，不代表Mooncakes发布、组委会验收或CAD厂商互操作认证。
+公共MoonBit消费者验证实际dxfkit/moon-geometry对象、旧式折线投影及原件保真。文件宿主回归验证严格UTF8输入、路径/硬链接别名保护、绑定计划、修复预览、物理记录交接和APPID/XRECORD改写接收，逐字节对照独立原件与预期；其范围不包括并发文件替换或写出耐久性。许可证、依赖和参考资料各按原记录保留，见[来源与许可](THIRD_PARTY_NOTICES.md)。验证结果不代表Mooncakes发布、组委会验收或CAD厂商互操作认证。
 
 
 ## 持续集成
 
-GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行三个 MoonBit 消费示例。JS 任务另运行独立 golden tag 对照、文件计划例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。
+GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行七个 MoonBit 公共包消费示例。JS 任务另运行独立 golden tag 对照、文件计划与接收例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。

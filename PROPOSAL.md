@@ -1,6 +1,6 @@
 # moonbit-dxf：DXF记录保真、诊断与可控重写
 
-`wang-chen89/dxf`是MoonBit原生ASCII/Binary DXF格式层，把原件保存、语义转换和显式修复分开，供下游几何库及文件工具复用。
+`wang-chen89-2/dxf`是MoonBit原生ASCII/Binary DXF格式层，把原件保存、语义转换和显式修复分开，供下游几何库及文件工具复用。
 面向CAD导入开发者、CAM/GIS数据处理脚本和图纸批处理工具：先检查来源文件，再准确修改指定属性，保留未理解的数据并报告处理边界。
 
 1. 分块输入ASCII或Binary，输出有类型tag及原始字节区间；支持R10–R12与R14–R2018配置，独立完整模型实测R12/R2000/R2018，R13只保原件并诊断。
@@ -22,5 +22,5 @@ moon run examples/classic_polyline --target wasm-gc
 独立贡献是可保留未知内容的Binary记录层、可定位诊断及带前置条件的局部改写，与dxfkit的实体组装、moon-geometry的几何模型形成分工。
 完成度由JS/Wasm-GC回归、真实上游对象断言及独立ezdxf回读支持；三版本模型共3,719个有序tag完成对照，六份转码输出audit无错误/修复。字节保真与语义验收分别验证。
 关键边界：不支持全实体语义、ACIS/SAT、任意坏Binary重同步、结构插删、版本迁移或引用自动更新；闭合/空间/曲线旧式折线不投影。完整缓冲占O(输入)内存，无性能或厂商CAD认证承诺。
-源码仓库：[wang-chen89-2/moonbit-dxf](https://github.com/wang-chen89-2/moonbit-dxf)；模块仍为wang-chen89/dxf，当前版本0.1.0，未发布Mooncakes；GitHub源码发布不代表赛事验收。
+源码仓库：[wang-chen89-2/moonbit-dxf](https://github.com/wang-chen89-2/moonbit-dxf)；模块为`wang-chen89-2/dxf`，当前维护与申报账号为`wang-chen89-2`。当前版本0.1.0，未发布Mooncakes；GitHub源码发布不代表赛事验收。原始来源作者标识`wang-chen89`、许可证及Git作者历史按原记录保留。
 根LICENSE为MIT；dxfkit 0.1.1为Apache-2.0，moon-geometry 0.251.0及验证用ezdxf 1.4.3为MIT。自建模型数据CC0-1.0；厂商文档不改许可、不捆绑未获授权图纸，详见THIRD_PARTY_NOTICES。

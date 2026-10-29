@@ -1,6 +1,6 @@
 import {
-  "wang-chen89/dxf",
-  "wang-chen89/dxf/adapters",
+  "wang-chen89-2/dxf",
+  "wang-chen89-2/dxf/adapters",
   "walkzzz/moon-geometry/io/dxf_io",
 }
 
