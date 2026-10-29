@@ -82,6 +82,8 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 已有按索引编写的计划（包括没有句柄的记录）可用`bind-plan INPUT PLAN.json`先完整校验，再向stdout输出同一原件绑定容器；不改原件/计划，不写DXF。编辑数字词法保留；若输入已绑定，须先匹配当前原件，失配不会被重新绑定。[既有计划绑定示例](examples/bind_plan/README.md)。
 
+按公共句柄交接完整物理记录可用 `doc.record_by_handle(handle)` 或 `node tools/dxf.mjs record INPUT OUTPUT HANDLE`：返回原始wire字节及绝对来源区间，文件收据另含原件/片段摘要和profile。实际接收方 `node examples/record_handoff/receive.mjs SOURCE RECORD RECEIPT` 核对原件成员关系并通过公共decoder读取一条物理记录；不会把片段当独立图纸、引用闭包或完整逻辑实体。保留102私有载荷，复用原拥有者规则和文件别名保护；新入口只接受完整typed、支持版本/wire一致的非repair源，旧API/JSON/计划与编码不变。[完整交接及错误边界](examples/record_handoff/README.md)。
+
 `DxfDecoder::new(mode?, max_bytes?, max_tags?, max_tag_bytes?)`的`feed(Bytes)`逐次发出完整tag，`finish()`处理尾部。默认上限64MiB输入、100万tag、1MiB单tag；有原件保真需求，解码器保留O(input)内存。不要无限制复用同一decoder；finish后feed/finish均报错。`write_to(binary~, callback)`逐tag写出，消费者异常向上传播。
 
 ## 格式与版本边界

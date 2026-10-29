@@ -10,10 +10,10 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const candidates=['_build/js/release/build/bridge/bridge.js','_build/js/debug/build/bridge/bridge.js'];
 const moduleFile=candidates.map(p=>path.join(root,p)).find(p=>fs.existsSync(p));
 if(!moduleFile) throw Error('Build first: moon build --target js');
-const {process_hex,apply_edits_hex,make_plan_hex,unwrap_source_plan}=await import(pathToFileURL(moduleFile));
+const {process_hex,apply_edits_hex,make_plan_hex,unwrap_source_plan,export_record_hex}=await import(pathToFileURL(moduleFile));
 const [action,input,output,planFile]=process.argv.slice(2);
-if(!['lint','binary','ascii','save','repair','repair-preview','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch'].includes(action)||!input || (action==='repair-preview'&&process.argv.length!==4) || (action==='patch'&&(!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
-  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs repair-preview INPUT\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json'); process.exit(2);
+if(!['lint','binary','ascii','save','repair','repair-preview','record','adapters','tags','make-plan','make-bound-plan','bind-plan','patch-plan','patch'].includes(action)||!input || (action==='record'&&process.argv.length!==6) || (action==='repair-preview'&&process.argv.length!==4) || (action==='patch'&&(!output||!planFile)) || (['make-plan','make-bound-plan','bind-plan','patch-plan'].includes(action)&&!output)) {
+  console.error('node tools/dxf.mjs lint|tags|binary|ascii|save|repair|adapters INPUT [OUTPUT]\nnode tools/dxf.mjs record INPUT OUTPUT HANDLE\nnode tools/dxf.mjs repair-preview INPUT\nnode tools/dxf.mjs make-plan|make-bound-plan INPUT REQUESTS.json\nnode tools/dxf.mjs bind-plan INPUT PLAN.json\nnode tools/dxf.mjs patch-plan INPUT PLAN.json\nnode tools/dxf.mjs patch INPUT OUTPUT PLAN.json'); process.exit(2);
 }
 function separateOutput(input,output) {
  if(!output) throw Error('An output path is required');
@@ -31,7 +31,8 @@ function readJsonInput(file) {
 try {
  const sourceBytes=fs.readFileSync(input), source=sourceBytes.toString('hex');
  let result, verifiedSource=null;
- if(['bind-plan','patch-plan','patch'].includes(action)) {
+ if(action==='record') result=export_record_hex(source,planFile);
+ else if(['bind-plan','patch-plan','patch'].includes(action)) {
    const decoded=unwrap_source_plan(readJsonInput(action==='patch'?planFile:output));
    if(decoded.startsWith('ERROR:')) throw Error(decoded);
    const metadata=JSON.parse(decoded);
@@ -65,7 +66,12 @@ try {
  } else {
    separateOutput(input,output);
    if(action==='patch') separateOutput(planFile,output);
-   if(['repair','patch'].includes(action)) {
+   if(action==='record') {
+     const report=JSON.parse(result), bytes=Buffer.from(report.output_hex,'hex');
+     const receipt={requested_handle:planFile,source_sha256:createHash('sha256').update(sourceBytes).digest('hex'),record_sha256:createHash('sha256').update(bytes).digest('hex'),version:report.version,binary:report.binary,offset:report.offset,end_offset:report.end_offset};
+     fs.writeFileSync(output,bytes);
+     console.error(JSON.stringify(receipt));
+   } else if(['repair','patch'].includes(action)) {
      const report=JSON.parse(result);
      if(verifiedSource!==null) report.source_sha256=verifiedSource;
      fs.writeFileSync(output,Buffer.from(report.output_hex,'hex'));

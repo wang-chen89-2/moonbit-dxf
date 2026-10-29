@@ -14,6 +14,7 @@ options(
         "apply_edits_hex",
         "make_plan_hex",
         "unwrap_source_plan",
+        "export_record_hex",
       ],
       "format": "esm",
     },

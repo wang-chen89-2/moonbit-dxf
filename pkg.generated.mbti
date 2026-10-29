@@ -67,6 +67,7 @@ pub fn DxfDocument::operation_mode(Self) -> OperationMode
 pub fn DxfDocument::original_bytes(Self) -> Bytes
 pub fn[S : DxfGeometrySink] DxfDocument::pump_geometry(Self, S) -> Unit raise DxfError
 pub fn DxfDocument::raw_tail(Self) -> RawChunk?
+pub fn DxfDocument::record_by_handle(Self, String) -> RawChunk raise DxfError
 pub fn DxfDocument::repair(Self) -> RepairResult raise DxfError
 pub fn DxfDocument::rewrite_value(Self, Int32, TagValue) -> Bytes raise DxfError
 pub fn DxfDocument::rewrite_values(Self, Array[ValueEdit]) -> RewriteResult raise DxfError
