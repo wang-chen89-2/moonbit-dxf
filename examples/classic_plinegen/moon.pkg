@@ -1,0 +1,8 @@
+import {
+  "wang-chen89-2/dxf",
+  "wang-chen89-2/dxf/adapters",
+  "mik1e80/dxfkit",
+  "walkzzz/moon-geometry/io/dxf_io",
+}
+
+pkgtype(kind: "executable")

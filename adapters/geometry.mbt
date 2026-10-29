@@ -225,8 +225,19 @@ fn classic_polyline_geometry(record : Bytes) -> @dxf_io.DxfEntity? {
     last.value is @dxfkit.Str("SEQEND") else {
     return None
   }
+  let mut polyline_header = false
   for tag in tags {
-    if [70, 75].contains(tag.code) && tag.value.as_int() != 0 {
+    if tag.code == 0 {
+      polyline_header = tag.value is @dxfkit.Str("POLYLINE")
+    }
+    // Header bit128 changes only linetype generation. Vertex flags retain
+    // their existing zero-only profile; no curve/spatial mode is projected.
+    if tag.code == 70 &&
+      tag.value.as_int() != 0 &&
+      !(polyline_header && tag.value.as_int() == 128) {
+      return None
+    }
+    if tag.code == 75 && tag.value.as_int() != 0 {
       return None
     }
     if [30, 39, 40, 41, 42, 210, 220].contains(tag.code) &&

@@ -132,7 +132,7 @@ Binary即使恰好截在tag边界，只要section未闭合，也只保留此前�
 
 dxfkit适配走发布版`scan_tags/build_drawing`，保留整图记录；moon-geometry适配只投递ENTITIES，避免其简单读取器将BLOCKS局部图元计入。后者投影LINE/CIRCLE、LWPOLYLINE和受限旧式POLYLINE点列，不能替代dxfkit的实体覆盖或块展开。两者都需要缓冲/分配；没有零开销声明，也没有把上游几何算法算作本库成果。
 
-旧式`POLYLINE/VERTEX/SEQEND`投影复用dxfkit的多记录组装，再映射到真实Point2D点列。只接收至少2个完整顶点的开放XY普通二维折线：主/顶点70及75标志为0或缺省，bulge/宽度/厚度/Z为0，法向缺省或(0,0,1)，序列须有SEQEND。闭合、曲线、空间/拟合/网格、非默认法向等变体继续不投影，原tag和save保持完整，不补点或猜测几何。[可运行旧式折线示例](examples/classic_polyline/README.md)。
+旧式`POLYLINE/VERTEX/SEQEND`投影复用dxfkit的多记录组装，再映射到真实Point2D点列。只接收至少2个完整顶点的开放XY普通二维折线：主记录70可为0、128或缺省，顶点70与所有75标志仍为0或缺省，bulge/宽度/厚度/Z为0，法向缺省或(0,0,1)，序列须有SEQEND。主记录128仅控制沿顶点的线型生成，不改变这里的点列坐标；本库不模拟线型绘制。闭合、曲线、空间/拟合/网格、非默认法向等变体继续不投影，原tag和save保持完整，不补点或猜测几何。[旧式折线示例](examples/classic_polyline/README.md)及[双格式线型标志消费示例](examples/classic_plinegen/README.md)。
 
 消费者可用只读`GeometrySink::unprojected_classic_count()`查询当前缓冲中尚未投影的旧式折线候选数，及时提示这类有限投影遗漏；原`drawing()`结果不变。未完整到达SEQEND的候选也计入当前快照，完成合法开放序列后计数可回落；查询不清空或消费缓冲。它复用现有私有字段过滤与投影判断，扫描缓冲并可能分配对象。
 
@@ -159,4 +159,4 @@ moon-geometry适配仅投递其模型可表示的几何字段，忽略其本就�
 
 ## 持续集成
 
-GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行七个 MoonBit 公共包消费示例。JS 任务另运行独立 golden tag 对照、文件计划与接收例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。
+GitHub Actions 在 Ubuntu 24.04 分别执行 JS、Wasm-GC 的 check/build/test、格式与公共接口检查，并运行八个 MoonBit 公共包消费示例。JS 任务另运行独立 golden tag 对照、文件计划与接收例程和 ezdxf 1.4.3 对六份转码输出的严格审计；非零 audit 错误或修复会令任务失败。工作流与安装入口见 `.github/workflows/check.yml` 和 `tools/ci-install.sh`，实际结果以对应提交的 Actions jobs 为准。

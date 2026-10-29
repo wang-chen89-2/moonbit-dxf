@@ -15,3 +15,5 @@ python3 -B tools/test_handle_lint.py "$RUNNER_TEMP/dxf-handle-lint"
 本地只运行受改动影响的测试及此文件门；CI 保留全部既有必要步骤。推送后须核对最终同一提交的两个必要 job 和本门实际成功，metadata 不冒充 runner 二进制或原始日志字节证明。源码 ZIP 和本地实际执行输出分别记录身份并封存，独立根 ACCEPT 后才计轮。
 
 公开 XRECORD code9 的共用保护器回归由两端原生测试和公共 xrecord_rewrite 消费者执行。JS 新门 `Test public XRECORD code9 rewrite and receiving` 运行 `python3 -B tools/test_xrecord_rewrite.py "$RUNNER_TEMP/dxf-xrecord-rewrite"`：独立完整原件/预期覆盖两种 wire 的绑定计划、预览、写出和实际 tags 接收，并核对正向上下文、真实结构/整批拒绝及旧类型/摘要/wire 错误通道。所有旧必要步骤保留。
+
+旧式折线的主记录线型标志128由两个后端的 `examples/classic_plinegen` 真实上游对象消费者核对。JS 门 `Test classic POLYLINE linetype profile and receiving` 运行 `python3 -B tools/test_classic_plinegen.py "$RUNNER_TEMP/dxf-classic-plinegen"`：14份独立完整双格式原件形成42个实际文件进程，接收全部typed tags、比较实际双适配器实体数并逐字节保存原件。主记录128、原0/缺省及102私有标志正例，与闭合129、顶点128、非零宽度边界分别核验；精确点列坐标和未投影快照由原生测试及公共消费者断言。既有必要门及参考生成流程保持。
