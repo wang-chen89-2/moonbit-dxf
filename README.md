@@ -72,6 +72,8 @@ let binary = doc.to_binary() // raises DxfError for unsupported conversion
 
 结构保护按102应用组作用域区分私有载荷：按原tag索引的计划可改其中已知类型元数据（如code9文本），不再误当HEADER变量名。真实SECTION/TABLE名称、HEADER键和版本仍锁定；默认句柄请求继续跳过应用私有字段。
 
+公开XRECORD在公开100/AcDbXrecord标记后的code9是既有Text载荷，允许通过原single/batch及句柄计划改值，无需HEADER迁移；下一物理记录重置权限。真实HEADER键/版本/结构名、未确认载荷上下文及旧expected/type/wire/hash检查保持，私有伪marker不放行。[完整原生及真实文件改写/接收](examples/xrecord_rewrite/README.md)。
+
 可运行的MoonBit及JSON计划见[examples/rewrite](examples/rewrite/README.md)。CLI新增`tags INPUT`、`patch-plan INPUT PLAN.json`（只显示校验记录）和`patch INPUT OUTPUT PLAN.json`；旧CLI/API继续保留。未选范围逐字节保持，所选tag可规范化编码；不插入/删除tag或自动更新引用，文件宿主不提供原子替换承诺。
 
 按记录句柄形成计划可用`value_edit_by_handle(handle, code, value, occurrence?)`与CLI `make-plan INPUT REQUESTS.json`。默认请求查找公共5句柄（DIMSTYLE为105），按组码/出现次序捕获原始有类型旧值，跳过102应用数据；输出兼容现有批量计划，文本用原始hex、Double用bits，避免把tags的有损显示当作旧字节。缺失/重复句柄或字段超界会拒绝。[普通字段示例](examples/handle_plan/README.md)。

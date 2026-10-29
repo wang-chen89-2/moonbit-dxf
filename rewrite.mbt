@@ -31,12 +31,14 @@ fn DxfDocument::protected_values(self : DxfDocument) -> Array[Bool] {
   let mut record = ""
   let mut first_name = true
   let mut app_depth = 0
+  let mut xrecord_payload = false
   for i, tag in self.items {
     if tag.code == 0 {
       record = tag.text().unwrap_or("")
       first_name = true
       locked_flags[i] = true
       app_depth = 0
+      xrecord_payload = false
       continue
     }
     let next = appdata_depth_after(app_depth, tag)
@@ -45,7 +47,12 @@ fn DxfDocument::protected_values(self : DxfDocument) -> Array[Bool] {
     if in_appdata {
       continue
     }
-    if tag.code == 9 {
+    if record == "XRECORD" &&
+      tag.code == 100 &&
+      tag.value == Text(b"AcDbXrecord") {
+      xrecord_payload = true
+    }
+    if tag.code == 9 && !xrecord_payload {
       locked_flags[i] = true
     } else if tag.code == 2 {
       if first_name && (record == "SECTION" || record == "TABLE") {
